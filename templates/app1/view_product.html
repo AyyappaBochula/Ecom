@@ -1,0 +1,85 @@
+{% extends 'app1/home.html' %}
+{% block title %}Product Details{% endblock %}
+
+{% block content %}
+{% if product %}
+<section class="py-5">
+    <div class="container my-5">
+        <div class="row gx-5 align-items-center">
+    
+            <div class="col-md-6 text-center mb-4 mb-md-0">
+                <img src="{{ product.image.url }}" 
+                     alt="Product Image" 
+                     class="img-fluid rounded shadow-lg" 
+                     style="max-height: 400px; object-fit: cover;">
+            </div>
+
+            <div class="col-md-6">
+                {% if product.on_sale %}
+                    <span class="badge bg-danger mb-2">On Sale</span>
+                {% endif %}
+                <h1 class="display-5 fw-bolder">{{ product.name }}</h1>
+                <h5 class="text-muted mb-3">Category: {{ product.category }}</h5>
+
+                <div class="fs-5 mb-4">
+                    <span class="text-success fw-bold">₹{{ product.current_price }}</span>
+                    {% if product.price > product.current_price %}
+                        <span class="text-muted text-decoration-line-through">₹{{ product.price }}</span>
+                    {% endif %}
+                </div>
+
+                <p class="lead mb-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet consectetur, adipisicing elit.</p>
+
+                <form method="post" action="{% url 'add_cart' product.pid %}" class="d-flex align-items-center flex-wrap gap-3">
+                    {% csrf_token %}
+  
+                    <div class="input-group" style="width: 8rem;">
+                        <button type="button" class="btn btn-outline-secondary" onclick="this.parentNode.querySelector('input').stepDown()">-</button>
+                        <input class="form-control text-center" name="quantity" type="number" value="1" min="1" max="10"/>
+                        <button type="button" class="btn btn-outline-secondary" onclick="this.parentNode.querySelector('input').stepUp()">+</button>
+                    </div>
+
+                    {% if sizes %}
+                        <select name="size" class="form-select" style="max-width: 8rem;">
+                            {% for s in sizes %}
+                                <option value="{{ s }}">{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                    {% endif %}
+                    <button type="submit" class="btn btn-dark flex-shrink-0">Add to Cart</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="py-5 bg-light">
+    <div class="container my-5">
+        <h2 class="fw-bolder mb-4 text-center">Related Products</h2>
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            {% for c in related_products %}
+            <div class="col mb-5">
+                <div class="card h-100 shadow-sm">
+                    {% if c.on_sale %}
+                        <div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; right: 0.5rem;">Sale</div>
+                    {% endif %}
+                    <img src="{{ c.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ c.name }}">
+                    <div class="card-body p-3 text-center">
+                        <h5 class="fw-bold">{{ c.name }}</h5>
+                        <p class="text-muted mb-1">Category: {{ c.category }}</p>
+                        <span class="fw-bold text-success">₹{{ c.current_price }}</span>
+                        {% if c.price > c.current_price %}
+                            <span class="text-muted text-decoration-line-through">₹{{ c.price }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0 text-center">
+                        <a href="{% url 'view_product' c.pid c.category %}" class="btn btn-outline-dark btn-sm mt-2">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

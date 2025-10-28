@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>{% block title %}Home{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}" />
+
+    <!-- Bootstrap icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <!-- Core CSS -->
+    <link href="{% static 'CSS/styles.css' %}" rel="stylesheet" />
+</head>
+<body>
+
+    <!-- Messages -->
+    {% block messages %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endblock %}
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">Fashion Cart</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+       data-bs-toggle="dropdown" aria-expanded="false">Products</a>
+    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <li><a class="dropdown-item" href="{% url 'home' %}">All Products</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        {% for cat in categories %}
+            <li><a class="dropdown-item" href="{% url 'category_products' cat.name %}">{{ cat.name }}</a></li>
+        {% endfor %}
+    </ul>
+</li>
+
+                </ul>
+
+                <div class="d-flex align-items-center gap-2">
+                    {% if username %}
+                        <a href="{% url 'cart' %}" class="btn btn-outline-dark"><i class="bi-cart-fill me-1"></i>Cart</a>
+                        <a href="{% url 'profile' %}" class="btn btn-outline-dark"><i class="bi-person-circle me-1"></i>Profile</a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-dark"><i class="bi-box-arrow-right me-1"></i>Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-dark"><i class="bi-box-arrow-in-right me-1"></i>Login</a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-dark"><i class="bi-person-plus-fill me-1"></i>Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    {% block content %}
+        <header class="bg-dark py-5">
+            <div class="container text-center text-white">
+                <h1 class="display-4 fw-bolder">Shop in Style</h1>
+                <p class="lead text-white-50">Discover the latest trends in fashion</p>
+            </div>
+        </header>
+
+        <!-- Products Section -->
+        <section class="py-5">
+            <div class="container mt-5">
+                <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                    {% for p in products %}
+                        <div class="col mb-5">
+                            <div class="card h-100 shadow-sm">
+                                {% if p.on_sale %}
+                                    <div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; right: 0.5rem;">Sale</div>
+                                {% endif %}
+                                <img class="card-img-top" src="{{ p.image.url }}" alt="{{ p.name }}" style="height: 200px; object-fit: cover;">
+                                <div class="card-body p-3 text-center">
+                                    <h5 class="fw-bold">{{ p.name }}</h5>
+                                    <p class="text-muted mb-1">Category: {{ p.category }}</p>
+                                    <span class="fw-bold text-success">₹{{ p.current_price }}</span>
+                                    {% if p.price > p.current_price %}
+                                        <span class="text-muted text-decoration-line-through">₹{{ p.price }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0 text-center">
+                                    <a class="btn btn-outline-dark btn-sm mt-2" href="{% url 'view_product' p.pid p.category %}">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    {% endblock %}
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark">
+        <div class="container text-center">
+            <p class="m-0 text-white">&copy; 2023 Fashion Cart. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+{% extends 'app1/home.html' %}
+{% load static %}
+{% block title %}Register-Page {% endblock %}
+
+{% block messages %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<br>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card shadow-lg p-4" style="width: 400px;">
+    <h3 class="text-center mb-4">Register</h3>
+    
+    <form method="POST" action="" id="registerForm">
+      {% csrf_token %}
+        <div class="form-group mb-3">
+        <label for="f_name">First Name</label>
+        <input type="text" class="form-control" name="f_name" id="f_name" placeholder="Enter First Name" >
+        <div class="text-danger small" id="f_name_error"></div>
+      </div>
+
+        <div class="form-group mb-3">
+        <label for="f_name">Last Name</label>
+        <input type="text" class="form-control" name="l_name" id="l_name" placeholder="Enter Last Name">
+          <div class="text-danger small" id="l_name_error"></div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="f_name">Username</label>
+        <input type="text" class="form-control" name="username" id="username" placeholder="Enter First Name" >
+      <div class="text-danger small" id="username_error"></div>  
+    </div>
+
+      <div class="form-group mb-3">
+        <label for="password1">Password</label>
+        <input type="password" class="form-control" name="password" id="password1" placeholder="Enter Password">
+          <div class="text-danger small" id="password1_error"></div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="password2">Re-Password</label>
+        <input type="password" class="form-control" name="password2" id="password2" placeholder="Re-Enter Password">
+          <div class="text-danger small" id="password2_error"></div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" name="email" id="email" placeholder="Enter Email">
+          <div class="text-danger small" id="email_error"></div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="mobile_no">Mobile_No</label>
+        <input type="number" class="form-control" name="mobile_no" id="mobile_no" placeholder="Enter Mobile_No">
+          <div class="text-danger small" id="mobile_no_error"></div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Register</button>
+    </form>
+  </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("registerForm");
+
+    const fields = {
+        f_name: document.getElementById("f_name"),
+        l_name: document.getElementById("l_name"),
+        username: document.getElementById("username"),
+        password1: document.getElementById("password1"),
+        password2: document.getElementById("password2"),
+        email: document.getElementById("email"),
+        mobile_no: document.getElementById("mobile_no")
+    };
+
+    const errors = {
+        f_name: document.getElementById("f_name_error"),
+        l_name: document.getElementById("l_name_error"),
+        username: document.getElementById("username_error"),
+        password1: document.getElementById("password1_error"),
+        password2: document.getElementById("password2_error"),
+        email: document.getElementById("email_error"),
+        mobile_no: document.getElementById("mobile_no_error")
+    };
+
+    form.addEventListener("submit", function (event) {
+        let hasError = false;
+        Object.values(errors).forEach(e => e.textContent = "");
+
+        if (fields.f_name.value === "") {
+            errors.f_name.textContent = "First name is required";
+            hasError = true;
+        }
+        if (fields.l_name.value === "") {
+            errors.l_name.textContent = "Last name is required";
+            hasError = true;
+        }
+        if (fields.username.value === "") {
+            errors.username.textContent = "Username is required";
+            hasError = true;
+        }
+         const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+        if (!passwordPattern.test(fields.password1.value)) {
+            errors.password1.textContent = "Password must be at least 6 characters and include uppercase, lowercase, number & special character";
+            hasError = true;
+        }
+        if (fields.password1.value !== fields.password2.value) {
+            errors.password2.textContent = "Passwords do not match";
+            hasError = true;
+        }
+        const emailPattern = /[A-Za-z0-9!@#$%^&*]+@gmail[.]com/;
+        if (!emailPattern.test(fields.email.value)) {
+            errors.email.textContent = "Invalid email format";
+            hasError = true;
+        }
+        if (!/^[6-9]{1}\d{9}$/.test(fields.mobile_no.value)) {
+            errors.mobile_no.textContent = "Mobile number must be 10 digits";
+            hasError = true;
+        }
+
+        if (hasError) {
+            event.preventDefault();
+        }
+    });
+});
+</script>
+
+{% endblock %}

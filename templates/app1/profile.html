@@ -1,0 +1,113 @@
+{% extends 'app1/home.html' %}
+{% load static %}
+{% block title %}Profile Page{% endblock %}
+
+{% block messages %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+   <div class="text-center my-4">
+    <img src="{% static 'images/profile.png' %}" 
+         alt="Profile" 
+         class="rounded-circle border border-4 border-danger shadow-lg"
+         style="width: 220px; height: 220px; object-fit: cover;">
+</div>
+
+    <h2 class="text-center text-danger mb-3"><u>Profile</u></h2>
+    <div class="card shadow p-4 mb-5" style="max-width: 600px; margin: auto;">
+        <div class="text-center text-success">
+            {% if data %}
+                <h5>First Name: <span class="text-dark">{{ data.f_name }}</span></h5>
+                <h5>Last Name: <span class="text-dark">{{ data.l_name }}</span></h5>
+                <h5>Username: <span class="text-dark">{{ data.username }}</span></h5>
+                <h5>Email: <span class="text-dark">{{ data.email }}</span></h5>
+                <h5>Mobile Number: <span class="text-dark">{{ data.mobile_no }}</span></h5>
+            {% endif %}
+        </div>
+    </div>
+    <h2 class="text-center text-danger mb-3"><u>Cart Products</u></h2>
+    <div class="d-flex justify-content-center mb-5">
+        <table class="table table-bordered table-striped text-center shadow" 
+               style="width: 80%; font-size: 18px;">
+            <thead class="table-danger">
+                <tr>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Size</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if cart and cart.products %}
+                    {% for item in cart.products %}
+                        <tr>
+                            <td>{{ item.pid }}</td>
+                            <td>{{ item.pname }}</td>
+                            <td>{{ item.size }}</td>
+                            <td>{{ item.price }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.total }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-muted">No items in cart</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <h2 class="text-center text-danger mb-3"><u>Ordered Products</u></h2>
+    <div class="d-flex justify-content-center mb-5">
+        <table class="table table-bordered table-striped text-center shadow" 
+               style="width: 90%; font-size: 18px;">
+            <thead class="table-danger">
+                <tr>
+                    <th>Order Date</th>
+                    <th>Status</th>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Size</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if order %}
+                    {% for item in order %}
+                        {% for product in item.products %}
+                            <tr>
+                                <td>{{ item.created_at|date:"d M Y H:i" }}</td>
+                                <td>{{ item.status }}</td>
+                                <td>{{ product.pid }}</td>
+                                <td>{{ product.pname }}</td>
+                                <td>{{ product.size }}</td>
+                                <td>{{ product.price }}</td>
+                                <td>{{ product.quantity }}</td>
+                                <td>{{ product.total }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-muted">No orders placed yet</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

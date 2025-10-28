@@ -1,0 +1,48 @@
+{% extends 'app1/home.html' %}
+{% load static %}
+
+{% block title %}About Us - Fashion Cart{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="fw-bold text-center mb-4 text-dark">About Fashion Cart</h2>
+
+    <div class="row align-items-center">
+      <!-- Left Image -->
+      <div class="col-lg-6 mb-4 text-center">
+        <img src="{% static 'images/about_us.jpg' %}"
+             alt="About Fashion Cart"
+             class="img-fluid rounded shadow"
+             style="max-height: 400px; object-fit: cover;">
+      </div>
+
+      <!-- Right Text -->
+      <div class="col-lg-6">
+        <h4 class="fw-bold">Who We Are</h4>
+        <p class="text-muted">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vitae
+          justo quis nisl dapibus iaculis. Aenean sagittis, arcu at varius vulputate,
+          sem turpis elementum augue, non aliquam lorem ipsum in neque.
+        </p>
+
+        <h4 class="fw-bold mt-4">Our Mission</h4>
+        <p class="text-muted">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti.
+          Curabitur vel sem non nulla fermentum convallis. Sed vehicula, elit id cursus 
+          porta, augue est facilisis turpis, nec aliquam sapien mi eget lacus.
+        </p>
+
+        <h4 class="fw-bold mt-4">Our Vision</h4>
+        <p class="text-muted">
+          Integer nec massa non magna iaculis dignissim. Pellentesque habitant morbi 
+          tristique senectus et netus et malesuada fames ac turpis egestas. In sit amet 
+          metus sed mauris efficitur suscipit sit amet vitae elit.
+        </p>
+
+        <a href="{% url 'home' %}" class="btn btn-dark mt-3">Back to Home</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

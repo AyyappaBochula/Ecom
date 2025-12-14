@@ -15,9 +15,6 @@ asgiref==3.8.1
 Pillow==10.4.0
 requests==2.32.3
 
-# --- Optional for image/text processing (if used) ---
-opencv-python==4.12.0.88
-pytesseract==0.3.13
 
 # --- Optional for API usage ---
 python-dotenv==1.1.1

@@ -1,6 +1,9 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from app1.models import Customer,Product,Category,Cart,Order
 from django.contrib import messages
+from app1.recommender import get_recommendations
+from django.shortcuts import get_object_or_404
+
 # Create your views here.
 
 def home(request):
@@ -8,6 +11,7 @@ def home(request):
     products=Product.objects.all()
     categories = Category.objects.all()
     return render(request,'app1/home.html',{'products':products,'categories':categories,'username':username})
+
 def category_products(request, category_name):
     username = request.session.get('username', None)
     categories = Category.objects.all()
@@ -29,6 +33,7 @@ def login(request):
             messages.success(request,'Invalid Username and Password ....')
             return render(request,'app1/login.html')            
     return render(request,'app1/login.html')
+
 def register(request):
     if request.method=='POST':
         f_name=request.POST.get('f_name')
@@ -56,17 +61,37 @@ def logout(request):
     del request.session['username']
     return redirect('home')
 
-def view_product(request,pid,category):
+def view_product(request, pid, category):
     categories = Category.objects.all()
-    username=request.session.get('username',default=None)
-    product=Product.objects.get(pid=pid)
-    category_obj=Category.objects.get(name=category)
-    sizes=category_obj.sizes if category_obj.sizes else None
-    related_products=Product.objects.filter(category=category_obj).exclude(pid=pid)
-    return render(request,'app1/view_product.html',{'product':product,'related_products':related_products,'sizes':sizes,'username':username,'categories':categories})
+    username = request.session.get('username', default=None)
+    product = get_object_or_404(Product, pid=pid)
+    # category_obj may be optional if product has category FK - prefer product.category
+    category_obj = product.category if getattr(product, 'category', None) else Category.objects.get(name=category)
+    sizes = getattr(category_obj, 'sizes', None) or None
+
+    # existing related products by category
+    related_products = Product.objects.filter(category=category_obj).exclude(pid=pid)[:8]
+
+    # AI recommendations (content-based)
+    try:
+        recommendations = get_recommendations(product.pid, top_n=4)
+    except Exception:
+        recommendations = []
+
+    return render(request, 'app1/view_product.html', {
+        'product': product,
+        'related_products': related_products,
+        'recommendations': recommendations,
+        'sizes': sizes,
+        'username': username,
+        'categories': categories
+    })
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from app1.models import Customer, Product, Cart
 
 def add_cart(request, pid):  
-    categories = Category.objects.all()
+    # Get logged-in username from session
     username = request.session.get('username')
     product = get_object_or_404(Product, pid=pid)
 
@@ -77,8 +102,11 @@ def add_cart(request, pid):
     if request.method == 'POST':
         qty = int(request.POST.get('quantity') or 1)
         size = request.POST.get('size') or 'M'
+
+        # Get customer object
         customer_obj = Customer.objects.get(username=username)
 
+        # Get existing cart or create new
         cart = Cart.objects.filter(customer=customer_obj).first()
         if not cart:
             cart = Cart.objects.create(customer=customer_obj, products=[])
@@ -86,6 +114,7 @@ def add_cart(request, pid):
         if not isinstance(cart.products, list):
             cart.products = []
 
+        # Check if product is already in cart
         product_found = False
         for item in cart.products:
             if item.get('pid') == product.pid and item.get('size') == size:
@@ -94,6 +123,7 @@ def add_cart(request, pid):
                 product_found = True
                 break
 
+        # Add new product if not found
         if not product_found:
             data = {
                 'pid': product.pid,
@@ -101,16 +131,16 @@ def add_cart(request, pid):
                 'size': size,
                 'price': float(product.price),
                 'quantity': qty,
-                'total': float(product.price) * qty,
-                'categories':categories
+                'total': float(product.price) * qty
             }
             cart.products.append(data)
 
         cart.save()
         messages.success(request, 'Item Added to Cart')
-        return redirect('home')
 
+    # Redirect to home (no JSON, avoids serialization issues)
     return redirect('home')
+
 def cart(request):
     categories = Category.objects.all()
     username = request.session.get('username')
@@ -221,4 +251,4 @@ def about(request):
     categories = Category.objects.all()
     username=request.session.get('username',default=None)
     return render(request,'app1/about.html',{'username':username,'categories':categories})
-    
+

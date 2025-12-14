@@ -86,7 +86,7 @@ def view_product(request, pid, category):
         'username': username,
         'categories': categories
     })
-from django.shortcuts import render, redirect, get_object_or_404
+
 from django.contrib import messages
 from app1.models import Customer, Product, Cart
 
